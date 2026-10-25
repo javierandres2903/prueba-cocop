@@ -49,22 +49,23 @@
 
 <script>
   // ====== EDITA ESTO ======
-  // Número con código de país, sin + ni espacios. Venezuela = 58. Ejemplo: 584121234567
-        const WHATSAPP = "@javier_anndres";
+  // Pon aquí tu número de teléfono (no el nombre de usuario). Puedes escribirlo como quieras:
+  // "0412-1234567", "584121234567", "+58 412 1234567"... el código lo arregla solo.
+  const WHATSAPP = "0412-3219804";
 
   // Precios en dólares. Revisa los marcados con (?) con el dueño: no se leían bien en la imagen.
   const MENU = [
     { title: "Cocadas", items: [
-      { n: "Tradicional", p: { PQ: 2.5, MD: 3, GR: 3.5 } },          // (?)
-      { n: "Tropical (trocito de fresa)", p: { PQ: 2.5, MD: 3, GR: 3.5 } }, // (?)
+      { n: "Tradicional", p: { PQ: 2, MD: 3, GR: 3.5 } },
+      { n: "Tropical (trocito de fresa)", p: { PQ: 2, MD: 3, GR: 3.5 } },
       { n: "Coco Oreo", p: { GR: 4.5 } },
-      { n: "Coco Samba", p: { GR: 5.5 } },                           // (?)
-      { n: "Coco Pirulín", p: { GR: 5.5 } },                         // (?)
-      { n: "Coco Cocosete", p: { GR: 5.5 } },                        // (?)
-      { n: "Coco Cereal", p: { GR: 4.5 } },                          // (?)
-      { n: "Coco Fruta (parchita, mora o fresa)", p: { GR: 4.5 } },  // (?)
-      { n: "Coco Melocotón", p: { GR: 5.5 } },                       // (?)
-      { n: "Coco con Brownie", p: { GR: 4.5 } }                      // (?)
+      { n: "Coco Samba", p: { GR: 5 } },
+      { n: "Coco Pirulín", p: { GR: 5 } },
+      { n: "Coco Cocosete", p: { GR: 5 } },
+      { n: "Coco Cereal", p: { GR: 4 } },
+      { n: "Coco Fruta (parchita, mora o fresa)", p: { GR: 4 } },
+      { n: "Coco Melocotón", p: { GR: 5 } },
+      { n: "Coco con Brownie", p: { GR: 4 } }
     ]},
     { title: "Fresa con crema", note: "Extras: helado, sirope de fresa y chocolate.", items: [
       { n: "Tradicional", p: { PQ: 3, MD: 4 } },
@@ -72,15 +73,53 @@
       { n: "Brownie", p: { PQ: 4, MD: 5 } }
     ]},
     { title: "Batidos", note: "Mora, fresa o parchita.", items: [
-      { n: "Batido", p: { PQ: 1, MD: 1.5, GR: 3 } }                  // (?)
+      { n: "Batido", p: { PQ: 1, MD: 1.5, GR: 3 } }
     ]},
     { title: "Brownie con helado", items: [
       { n: "Brownie con helado", p: { "": 4 } }
+    ]},
+    { title: "Tizana", note: "Topping: crema chantilly, trocitos de fruta y leche condensada.", items: [
+      { n: "Tizana tradicional", p: { PQ: 1.5, MD: 2, GR: 3 } },
+      { n: "Tizana con helado", p: { "": 3.5 } }               // (?) tamaño
+    ]},
+    { title: "Malteadas", note: "Topping: crema chantilly y sirope de preferencia.", items: [
+      { n: "Fresa tradicional", p: { "": 3 } },
+      { n: "Fresa coco", p: { "": 3.5 } },
+      { n: "Fresa chocolate", p: { "": 4 } },
+      { n: "Fresa samba", p: { "": 4.5 } },
+      { n: "Fresa oreo", p: { "": 4.5 } },
+      { n: "Fresa pirulín", p: { "": 5 } },
+      { n: "Fresa brownie", p: { "": 4.5 } },
+      { n: "Choco chocolate", p: { "": 3.5 } },
+      { n: "Choco oreo", p: { "": 4.5 } },
+      { n: "Choco samba", p: { "": 4.5 } },
+      { n: "Choco pirulín", p: { "": 4 } },
+      { n: "Choco coco", p: { "": 4 } },
+      { n: "Choco brownie", p: { "": 4.5 } },
+      { n: "Cerelac tradicional", p: { "": 4 } },
+      { n: "Cerelac con fresa", p: { "": 4.5 } },
+      { n: "Cerelac con cambur", p: { "": 4 } },
+      { n: "Cerelac con melón", p: { "": 4.5 } }
+    ]},
+    { title: "Chicha", note: "Topping: oblea, leche condensada, canela y topping.", items: [
+      { n: "Chicha tradicional", p: { PQ: 1, MD: 1.5, GR: 2 } },
+      { n: "Chicha con topping o con brownie", p: { "": 3 } }   // (?) no se leía bien
+    ]},
+    { title: "Coco frío", items: [
+      { n: "Coco frío", p: { "": 1.5 } },
+      { n: "Agua de coco, 1 litro", p: { "": 5 } }
     ]}
   ];
   // ========================
 
-  const wa = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+  // Deja solo dígitos, quita el 0 inicial y agrega 58 (Venezuela) si falta
+  const phone = (() => {
+    let d = String(WHATSAPP).replace(/\D/g, "").replace(/^00/, "");
+    if (d.startsWith("0")) d = d.slice(1);
+    if (!d.startsWith("58")) d = "58" + d;
+    return d;
+  })();
+  const wa = (text) => `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
   const money = (v) => "$" + (Number.isInteger(v) ? v : v.toFixed(2).replace(/0$/, ""));
 
   document.getElementById("waMain").href = wa("Hola, quiero hacer un pedido en Coco Fresh.");
@@ -115,6 +154,12 @@
     const open = hour >= 13 && hour < closeAt;
     const el = document.getElementById("status");
     el.textContent = open ? "Abierto ahora" : "Cerrado ahora · abrimos a la 1:00 p. m.";
+    el.classList.add(open ? "open" : "closed");
+  })();
+</script>
+</body>
+</html>
+
     el.classList.add(open ? "open" : "closed");
   })();
 </script>
