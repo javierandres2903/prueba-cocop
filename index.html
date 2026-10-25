@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coco Fresh · Cocadas en El Cabrito</title>
+  <meta name="description" content="Cocadas, batidos, fresas con crema y brownies. Mira el menú y pide por WhatsApp.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Satisfy&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="hero">
+    <p class="logo-script">Coco</p>
+    <h1>Fresh</h1>
+    <p class="tagline">Cocadas, batidos y fresas con crema.<br>Tu lugar feliz en El Cabrito.</p>
+    <p class="status" id="status" aria-live="polite"></p>
+    <a class="btn-wa" id="waMain" href="#">Pedir por WhatsApp</a>
+  </header>
+
+  <main>
+    <section class="block" id="menu">
+      <h2>Menú</h2>
+      <p class="legend">PQ pequeño · MD mediano · GR grande. Toca un precio para pedirlo por WhatsApp.</p>
+      <div id="menuList"></div>
+    </section>
+
+    <section class="block" id="horario">
+      <h2>Horario</h2>
+      <dl class="hours">
+        <div><dt>Lunes a jueves</dt><dd>1:00 p. m. a 9:00 p. m.</dd></div>
+        <div><dt>Viernes a domingo</dt><dd>1:00 p. m. a 11:00 p. m.</dd></div>
+      </dl>
+    </section>
+
+    <section class="block" id="ubicacion">
+      <h2>Dónde estamos</h2>
+      <p>El Cabrito, Yagua.</p>
+      <!-- Cuando tengas el enlace de Google Maps, pégalo en href -->
+      <a class="link" id="mapLink" href="#">Ver en el mapa</a>
+    </section>
+  </main>
+
+  <footer>
+    <a class="link" href="https://instagram.com/cocoofresh">@cocoofresh en Instagram</a>
+  </footer>
+
+<script>
+  // ====== EDITA ESTO ======
+  // Número con código de país, sin + ni espacios. Venezuela = 58. Ejemplo: 584121234567
+  const WHATSAPP = "04123219804";
+
+  // Precios en dólares. Revisa los marcados con (?) con el dueño: no se leían bien en la imagen.
+  const MENU = [
+    { title: "Cocadas", items: [
+      { n: "Tradicional", p: { PQ: 2.5, MD: 3, GR: 3.5 } },          // (?)
+      { n: "Tropical (trocito de fresa)", p: { PQ: 2.5, MD: 3, GR: 3.5 } }, // (?)
+      { n: "Coco Oreo", p: { GR: 4.5 } },
+      { n: "Coco Samba", p: { GR: 5.5 } },                           // (?)
+      { n: "Coco Pirulín", p: { GR: 5.5 } },                         // (?)
+      { n: "Coco Cocosete", p: { GR: 5.5 } },                        // (?)
+      { n: "Coco Cereal", p: { GR: 4.5 } },                          // (?)
+      { n: "Coco Fruta (parchita, mora o fresa)", p: { GR: 4.5 } },  // (?)
+      { n: "Coco Melocotón", p: { GR: 5.5 } },                       // (?)
+      { n: "Coco con Brownie", p: { GR: 4.5 } }                      // (?)
+    ]},
+    { title: "Fresa con crema", note: "Extras: helado, sirope de fresa y chocolate.", items: [
+      { n: "Tradicional", p: { PQ: 3, MD: 4 } },
+      { n: "Melocotón", p: { PQ: 4, MD: 5 } },
+      { n: "Brownie", p: { PQ: 4, MD: 5 } }
+    ]},
+    { title: "Batidos", note: "Mora, fresa o parchita.", items: [
+      { n: "Batido", p: { PQ: 1, MD: 1.5, GR: 3 } }                  // (?)
+    ]},
+    { title: "Brownie con helado", items: [
+      { n: "Brownie con helado", p: { "": 4 } }
+    ]}
+  ];
+  // ========================
+
+  const wa = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+  const money = (v) => "$" + (Number.isInteger(v) ? v : v.toFixed(2).replace(/0$/, ""));
+
+  document.getElementById("waMain").href = wa("Hola, quiero hacer un pedido en Coco Fresh.");
+
+  const list = document.getElementById("menuList");
+  MENU.forEach(cat => {
+    const sec = document.createElement("div");
+    sec.className = "cat";
+    sec.innerHTML = `<h3>${cat.title}</h3>` + (cat.note ? `<p class="note">${cat.note}</p>` : "");
+    cat.items.forEach(it => {
+      const row = document.createElement("div");
+      row.className = "item";
+      const pills = Object.entries(it.p).map(([size, price]) => {
+        const label = size ? `${size} ` : "";
+        const msg = `Hola, quiero ${it.n}${size ? " tamaño " + size : ""} (${money(price)}).`;
+        return `<a class="pill" href="${wa(msg)}">${label}${money(price)}</a>`;
+      }).join("");
+      row.innerHTML = `<span class="name">${it.n}</span><span class="pills">${pills}</span>`;
+      sec.appendChild(row);
+    });
+    list.appendChild(sec);
+  });
+
+  // Estado abierto/cerrado con la hora de Venezuela
+  (function () {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Caracas", weekday: "short", hour: "numeric", hour12: false
+    }).formatToParts(new Date());
+    const day = parts.find(p => p.type === "weekday").value;
+    const hour = parseInt(parts.find(p => p.type === "hour").value, 10) % 24;
+    const closeAt = ["Mon", "Tue", "Wed", "Thu"].includes(day) ? 21 : 23;
+    const open = hour >= 13 && hour < closeAt;
+    const el = document.getElementById("status");
+    el.textContent = open ? "Abierto ahora" : "Cerrado ahora · abrimos a la 1:00 p. m.";
+    el.classList.add(open ? "open" : "closed");
+  })();
+</script>
+</body>
+</html>
